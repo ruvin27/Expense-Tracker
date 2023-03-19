@@ -8,8 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -53,23 +51,32 @@ public class RegisterActivity extends AppCompatActivity {
     private void createUser(){
         String email = Objects.requireNonNull(etRegEmail.getText()).toString();
         String password = Objects.requireNonNull(etRegPassword.getText()).toString();
+        String name = Objects.requireNonNull(etname.getText()).toString();
+        String cPassword = Objects.requireNonNull(etConfirmPassword.getText()).toString();
 
-        if (TextUtils.isEmpty(email)){
+        if (TextUtils.isEmpty(name)){
+            etRegEmail.setError("Name cannot be empty");
+            etRegEmail.requestFocus();
+        }
+        else if (TextUtils.isEmpty(email)){
             etRegEmail.setError("Email cannot be empty");
             etRegEmail.requestFocus();
         }else if (TextUtils.isEmpty(password)){
             etRegPassword.setError("Password cannot be empty");
             etRegPassword.requestFocus();
-        }else{
+        }
+        else if (!password.equals(cPassword)){
+            etConfirmPassword.setError("Passwords do not match ");
+            etConfirmPassword.requestFocus();
+        }
+        else{
             mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(task -> {
                 if (task.isSuccessful()){
                     Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
 
                     userID = mAuth.getCurrentUser().getUid();
                     DatabaseReference myRef = database.getReference("users");
-                    Map<String,Object> user = new HashMap<>();
-                    user.put(userID, new User("Ruvin", email));
-                    myRef.setValue(user);
+                    myRef.child(userID).setValue(new User(name, email));
 
 //                    DatabaseReference expenseRef = myRef.child(userID).child("expenses");
 //                    DatabaseReference newExpenseRef = expenseRef.push();
