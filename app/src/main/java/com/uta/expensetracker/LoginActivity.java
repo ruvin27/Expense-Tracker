@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 
@@ -20,7 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     TextInputEditText etLoginPassword;
     TextView tvRegisterHere;
     Button btnLogin;
-
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    String userID;
     FirebaseAuth mAuth;
 
     @Override
@@ -53,6 +56,11 @@ public class LoginActivity extends AppCompatActivity {
             mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(task -> {
                 if (task.isSuccessful()){
                     Toast.makeText(LoginActivity.this, "User logged in successfully", Toast.LENGTH_SHORT).show();
+//                    userID = mAuth.getCurrentUser().getUid();
+//                    DatabaseReference myRef = database.getReference("users");
+//                    DatabaseReference expenseRef = myRef.child(userID).child("expenses");
+//                    DatabaseReference newExpenseRef = expenseRef.push();
+//                    newExpenseRef.setValue(new Expense("appu", "Car", 200.0f));
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 }else{
                     Toast.makeText(LoginActivity.this, "Log in Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();

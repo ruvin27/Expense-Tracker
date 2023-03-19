@@ -1,5 +1,4 @@
 package com.uta.expensetracker;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,10 +7,13 @@ import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import java.util.*;
 
-import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -19,8 +21,10 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputEditText etRegPassword;
     TextView tvLoginHere;
     Button btnRegister;
-
     FirebaseAuth mAuth;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    String userID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(view -> createUser());
 
         tvLoginHere.setOnClickListener(view -> startActivity(new Intent(RegisterActivity.this, LoginActivity.class)));
+
     }
 
     private void createUser(){
@@ -53,7 +58,19 @@ public class RegisterActivity extends AppCompatActivity {
             mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(task -> {
                 if (task.isSuccessful()){
                     Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+
+                    userID = mAuth.getCurrentUser().getUid();
+                    DatabaseReference myRef = database.getReference("users");
+                    Map<String,Object> user = new HashMap<>();
+                    user.put(userID, new User("Ruvin", email));
+                    myRef.setValue(user);
+
+//                    DatabaseReference expenseRef = myRef.child(userID).child("expenses");
+//                    DatabaseReference newExpenseRef = expenseRef.push();
+//                    newExpenseRef.setValue(new Expense("gracehop", "Food", 100.0f));
+
+
+                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                 }else{
                     Toast.makeText(RegisterActivity.this, "Registration Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                 }
