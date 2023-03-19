@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,8 +18,10 @@ import java.util.*;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    TextInputEditText etRegEmail;
-    TextInputEditText etRegPassword;
+    EditText etname;
+    EditText etRegEmail;
+    EditText etRegPassword;
+    EditText etConfirmPassword;
     TextView tvLoginHere;
     Button btnRegister;
     FirebaseAuth mAuth;
@@ -31,9 +34,12 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        etname = findViewById(R.id.etname);
         etRegEmail = findViewById(R.id.etRegEmail);
         etRegPassword = findViewById(R.id.etRegPass);
+        etConfirmPassword = findViewById(R.id.etConfirmPassword);
         tvLoginHere = findViewById(R.id.tvLoginHere);
+
         btnRegister = findViewById(R.id.btnRegister);
 
         mAuth = FirebaseAuth.getInstance();
