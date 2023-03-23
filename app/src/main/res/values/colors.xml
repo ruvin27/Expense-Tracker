@@ -9,6 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name = "cream">#FFEAB2</color>
     <color name = "yellow">#6E5513</color>
-    <color name="olive">#39481f </color>
-    <color name="green">#D5EBDA</color>
+    <color name="mintGreen">#1cc29f </color>
 </resources>
