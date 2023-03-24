@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.Objects;
@@ -14,7 +15,7 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText etLoginEmail;
     EditText etLoginPassword;
-    Button tvRegisterHere;
+    TextView tvRegisterHere;
     Button btnLogin;
 //    FirebaseDatabase database = FirebaseDatabase.getInstance();
 //    String userID;
