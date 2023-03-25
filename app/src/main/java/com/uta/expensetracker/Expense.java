@@ -6,14 +6,21 @@ import java.util.Date;
 public class Expense {
     public String name;
     public String category;
-    public Float amount;
+    public Double amount;
+
+    public String description;
+
+    //public Date date;
     SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
 
-    public String now = ISO_8601_FORMAT.format(new Date());
+  public String date;
 
-    public Expense(String name, String category, Float amount){
+    public Expense(String name,Double amount,String description,Date date, String category ){
         this.name = name;
-        this.category = category;
         this.amount = amount;
+        this.description = description;
+        this.date = ISO_8601_FORMAT.format(date);
+        this.category = category;
+
     }
 }
