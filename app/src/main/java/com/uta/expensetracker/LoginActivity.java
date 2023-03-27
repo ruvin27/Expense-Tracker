@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 //                    DatabaseReference expenseRef = myRef.child(userID).child("expenses");
 //                    DatabaseReference newExpenseRef = expenseRef.push();
 //                    newExpenseRef.setValue(new Expense("appu", "Car", 200.0f));
-                    startActivity(new Intent(LoginActivity.this, AddExpense.class));
+                    startActivity(new Intent(LoginActivity.this, Overview.class));
                 }else{
                     Toast.makeText(LoginActivity.this, "Log in Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                 }

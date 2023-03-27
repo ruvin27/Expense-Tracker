@@ -146,12 +146,14 @@ public class AddExpense extends AppCompatActivity {
             DatabaseReference expenseRef = database.getReference("users/" +userID+"/expenses" );
             Expense expense = new Expense(uname,damount,udescription,date,category);
             String expenseKey = expenseRef.push().getKey();
+            expense.setId(expenseKey);
+
             expenseRef.child(expenseKey).setValue(expense).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     System.out.println("Called Onsuccess");
                     Toast.makeText(AddExpense.this, "Expense added successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(AddExpense.this,LoginActivity.class));
+                    startActivity(new Intent(AddExpense.this,History.class));
                 }
             });
         }

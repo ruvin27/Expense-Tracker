@@ -43,7 +43,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="Total Expenses"
-            android:textSize="17dp" />
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/textView8"
@@ -53,7 +53,7 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="Amount"
-            android:textSize="17dp" />
+            android:textSize="23dp" />
 
     </androidx.cardview.widget.CardView>
 
@@ -201,11 +201,11 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
-        android:layout_width="179dp"
-        android:layout_height="95dp"
+        android:layout_width="187dp"
+        android:layout_height="97dp"
         android:layout_below="@+id/cardView1"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="27dp"
+        android:layout_marginStart="19dp"
         android:layout_marginTop="48dp"
         app:cardElevation="8dp">
 
@@ -216,7 +216,7 @@
             android:layout_gravity="top|center"
             android:gravity="center"
             android:text="Food"
-            android:textSize="17dp" />
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/textView5"
@@ -225,7 +225,7 @@
             android:layout_gravity="bottom|center"
             android:gravity="center"
             android:text="TextView"
-            android:textSize="17dp" />
+            android:textSize="23dp" />
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -247,7 +247,7 @@
             android:layout_gravity="top|center"
             android:gravity="center"
             android:text="Rent"
-            android:textSize="17dp" />
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/textView10"
@@ -256,20 +256,20 @@
             android:layout_gravity="bottom|center"
             android:gravity="center"
             android:text="Amount"
-            android:textSize="17dp" />
+            android:textSize="23dp" />
 
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView4"
-        android:layout_width="172dp"
-        android:layout_height="99dp"
+        android:layout_width="174dp"
+        android:layout_height="98dp"
         android:layout_above="@+id/toolbar2"
         android:layout_below="@+id/cardView2"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="25dp"
         android:layout_marginTop="52dp"
-        android:layout_marginBottom="158dp"
+        android:layout_marginBottom="154dp"
         app:cardElevation="8dp">
 
         <TextView
@@ -279,7 +279,7 @@
             android:layout_gravity="top|center"
             android:gravity="center"
             android:text="Groceries"
-            android:textSize="17dp" />
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/textView12"
@@ -288,18 +288,18 @@
             android:layout_gravity="bottom|center"
             android:gravity="center"
             android:text="Amount"
-            android:textSize="17dp" />
+            android:textSize="23dp" />
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView5"
-        android:layout_width="163dp"
-        android:layout_height="97dp"
+        android:layout_width="174dp"
+        android:layout_height="98dp"
         android:layout_above="@+id/toolbar2"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="22dp"
-        android:layout_marginBottom="157dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="156dp"
         android:layout_toEndOf="@+id/cardView4"
         app:cardElevation="8dp">
 
@@ -309,17 +309,17 @@
             android:layout_height="44dp"
             android:layout_gravity="top|center"
             android:gravity="center"
-            android:text="Miscellaneous"
-            android:textSize="17dp" />
+            android:text="MISC"
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/textView14"
-            android:layout_width="69dp"
-            android:layout_height="33dp"
+            android:layout_width="105dp"
+            android:layout_height="44dp"
             android:layout_gravity="bottom|center"
             android:gravity="center"
             android:text="Amount"
-            android:textSize="17dp" />
+            android:textSize="23dp" />
     </androidx.cardview.widget.CardView>
 
     <ImageButton
