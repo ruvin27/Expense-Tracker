@@ -1,19 +1,83 @@
 package com.uta.expensetracker;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Expense {
+public class Expense implements Serializable {
     public String name;
     public String category;
-    public Float amount;
-    SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
+    public Double amount;
 
-    public String now = ISO_8601_FORMAT.format(new Date());
+    public String description;
 
-    public Expense(String name, String category, Float amount){
+    //public Date date;
+   // SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
+
+  public String date;
+
+  public String id;
+
+
+  public Expense(){
+    id ="";
+  }
+
+    public Expense(String name,Double amount,String description,Date date, String category ){
         this.name = name;
-        this.category = category;
         this.amount = amount;
+        this.description = description;
+        this.date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(date);
+        this.category = category;
+        this.id = "";
+
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

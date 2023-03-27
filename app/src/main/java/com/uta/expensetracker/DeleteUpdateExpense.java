@@ -1,7 +1,10 @@
 package com.uta.expensetracker;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +16,25 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.AdapterView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class DeleteUpdateExpense extends AppCompatActivity {
 
@@ -27,19 +42,36 @@ public class DeleteUpdateExpense extends AppCompatActivity {
     private DatePickerDialog datePickerDialog;
     private Button dateButton;
 
-
+    private EditText upd_name;
+    private EditText upd_amount;
+    private EditText upd_description;
+    private Button update;
+    private TextView delete;
     private Spinner spinner;
+
+    FirebaseAuth mAuth;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference expReference;
+    String userID;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_update_expense);
+
+        Expense expense = (Expense) getIntent().getSerializableExtra("expense");
         initDatepicker();
+        mAuth = FirebaseAuth.getInstance();
+
+        upd_name = findViewById(R.id.editTextTextPersonName);
+        upd_amount = findViewById(R.id.amount_edittext);
+        upd_description = findViewById(R.id.editTextTextPersonName2);
         dateButton = findViewById(R.id.datepickerButton);
         dateButton.setText(getTodaysDate());
-
         spinner = findViewById(R.id.spinner);
+        update = findViewById(R.id.button2);
+        delete = findViewById(R.id.tvDelete);
 
         List<String> categories = new ArrayList<>();
         categories.add(0, "choose");
@@ -48,34 +80,116 @@ public class DeleteUpdateExpense extends AppCompatActivity {
         categories.add("Rent");
         categories.add("MISC");
 
-
         ArrayAdapter<String> dataAdapter;
         dataAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, categories);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         spinner.setAdapter(dataAdapter);
         spinner.setSelection(0,false);
 
+        upd_name.setText(expense.getName());
+        double amount = expense.getAmount();
+        String amountStr = String.valueOf(amount);
+        upd_amount.setText(amountStr);
+        upd_description.setText(expense.getDescription());
+
+        int categoryIndex = ((ArrayAdapter<String>) spinner.getAdapter()).getPosition(expense.getCategory());
+        System.out.println("index" + categoryIndex);
+        spinner.setSelection(categoryIndex);
+
+        String sdate = expense.getDate();
+        String dateAlone[] = sdate.split("T");
+        String dateSplit[] = dateAlone[0].split("-");
+        int year = Integer.valueOf(dateSplit[0]);
+        int month = Integer.valueOf(dateSplit[1]);
+        int day = Integer.valueOf(dateSplit[2]);
+        dateButton.setText(makeDateString(day,month,year));
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
                 if (parent.getItemAtPosition(position).equals("choose")) {
-
                 } else {
                     String item = parent.getItemAtPosition(position).toString();
 
                     Toast.makeText(parent.getContext(), "Selected:" + item, Toast.LENGTH_SHORT).show();
-
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
 
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name = upd_name.getText().toString();
+                Double amount = Double.valueOf(upd_amount.getText().toString());
+                String description = upd_description.getText().toString();
+                String category = spinner.getSelectedItem().toString();
+                String dateStr = dateButton.getText().toString();
+                System.out.println("datestr" + dateStr);
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd yyyy", Locale.US);
+                Date date = null;
+                try {
+                    date = dateFormat.parse(dateStr);
+
+                    System.out.println(date);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+                String newdate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(date);
+                System.out.println("newdate" + newdate);
+
+                userID = mAuth.getCurrentUser().getUid();
+                expReference = database.getReference("users/"+userID+"/expenses/"+expense.getId());
+
+
+                HashMap<String, Object> updatedExpense = new HashMap<>();
+                updatedExpense.put("name", name);
+                updatedExpense.put("amount", amount);
+                updatedExpense.put("description", description);
+                updatedExpense.put("date", newdate);
+                updatedExpense.put("category", category);
+
+                expReference.updateChildren(updatedExpense, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                        if(error == null){
+                            Toast.makeText(DeleteUpdateExpense.this, "Your expense" + expense.getName() +" got updated", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(DeleteUpdateExpense.this,History.class));
+                        } else{
+                            Toast.makeText(DeleteUpdateExpense.this, "Could not update the expense "+ expense.getName(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userID = mAuth.getCurrentUser().getUid();
+                expReference = database.getReference("users/"+userID+"/expenses/"+expense.getId());
+
+                expReference.removeValue(new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                        if( error == null){
+                            Toast.makeText(DeleteUpdateExpense.this, "Deleted expense " +  expense.getName() + " successfully", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(DeleteUpdateExpense.this, History.class));
+                        } else{
+                            Toast.makeText(DeleteUpdateExpense.this, "Could not delete " +  expense.getName(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
     }
+
 
 
     private String getTodaysDate() {

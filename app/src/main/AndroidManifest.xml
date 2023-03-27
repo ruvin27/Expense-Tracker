@@ -10,6 +10,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ExpenseTracker">
         <activity
+            android:name=".Profile"
+            android:exported="false" />
+        <activity
+            android:name=".Charts"
+            android:exported="false" />
+        <activity
+            android:name=".Overview"
+            android:exported="false" />
+        <activity
+            android:name=".HistoryLayout"
+            android:exported="false" />
+        <activity
+            android:name=".History"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.expensetracker.History" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DeleteUpdateExpense"
+            android:exported="false" />
+        <activity
             android:name=".AddExpense"
             android:exported="false" />
         <activity
