@@ -83,9 +83,10 @@ public class RegisterActivity extends AppCompatActivity {
 //                    newExpenseRef.setValue(new Expense("gracehop", "Food", 100.0f));
 
 
-                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                    startActivity(new Intent(RegisterActivity.this, Overview.class));
                 }else{
                     Toast.makeText(RegisterActivity.this, "Registration Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                 }
             });
         }

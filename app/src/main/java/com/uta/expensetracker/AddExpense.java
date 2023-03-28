@@ -40,6 +40,7 @@ public class AddExpense extends AppCompatActivity {
     private EditText amount;
     private EditText description;
     private Button add;
+    TextView back;
 
     FirebaseAuth mAuth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -60,6 +61,7 @@ public class AddExpense extends AppCompatActivity {
         amount = findViewById(R.id.amount_edittext);
         description = findViewById(R.id.editTextTextPersonName2);
         add = findViewById(R.id.addbtn);
+        back = findViewById(R.id.tvBack);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -99,7 +101,12 @@ public class AddExpense extends AppCompatActivity {
             }
         });
       add.setOnClickListener(view -> addExpense() );
+      back.setOnClickListener(view -> goToOverview());
 
+    }
+
+    private void goToOverview() {
+        startActivity(new Intent(AddExpense.this,Overview.class));
     }
 
     private void addExpense(){

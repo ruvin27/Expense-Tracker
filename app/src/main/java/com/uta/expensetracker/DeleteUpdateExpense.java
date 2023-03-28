@@ -154,15 +154,15 @@ public class DeleteUpdateExpense extends AppCompatActivity {
                 updatedExpense.put("category", category);
 
                 expReference.updateChildren(updatedExpense, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                        if(error == null){
-                            Toast.makeText(DeleteUpdateExpense.this, "Your expense" + expense.getName() +" got updated", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(DeleteUpdateExpense.this,History.class));
-                        } else{
-                            Toast.makeText(DeleteUpdateExpense.this, "Could not update the expense "+ expense.getName(), Toast.LENGTH_SHORT).show();
-                        }
+                @Override
+                public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                    if(error == null){
+                        Toast.makeText(DeleteUpdateExpense.this, "Your expense" + expense.getName() +" got updated", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(DeleteUpdateExpense.this,History.class));
+                    } else{
+                        Toast.makeText(DeleteUpdateExpense.this, "Could not update the expense "+ expense.getName(), Toast.LENGTH_SHORT).show();
                     }
+                }
                 });
 
             }
@@ -174,19 +174,19 @@ public class DeleteUpdateExpense extends AppCompatActivity {
                 userID = mAuth.getCurrentUser().getUid();
                 expReference = database.getReference("users/"+userID+"/expenses/"+expense.getId());
 
-                expReference.removeValue(new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                        if( error == null){
-                            Toast.makeText(DeleteUpdateExpense.this, "Deleted expense " +  expense.getName() + " successfully", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(DeleteUpdateExpense.this, History.class));
-                        } else{
-                            Toast.makeText(DeleteUpdateExpense.this, "Could not delete " +  expense.getName(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        });
+expReference.removeValue(new DatabaseReference.CompletionListener() {
+    @Override
+    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+        if( error == null){
+            Toast.makeText(DeleteUpdateExpense.this, "Deleted expense " +  expense.getName() + " successfully", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(DeleteUpdateExpense.this, History.class));
+        } else{
+            Toast.makeText(DeleteUpdateExpense.this, "Could not delete " +  expense.getName(), Toast.LENGTH_SHORT).show();
+        }
+    }
+});
+    }
+});
 
     }
 
