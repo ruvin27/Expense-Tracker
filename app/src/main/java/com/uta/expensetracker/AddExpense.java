@@ -160,7 +160,7 @@ public class AddExpense extends AppCompatActivity {
                 public void onSuccess(Void aVoid) {
                     System.out.println("Called Onsuccess");
                     Toast.makeText(AddExpense.this, "Expense added successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(AddExpense.this,History.class));
+                    startActivity(new Intent(AddExpense.this,Overview.class));
                 }
             });
         }
@@ -196,8 +196,10 @@ public class AddExpense extends AppCompatActivity {
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
+        int style = R.style.Theme_MaterialComponents_Light_Dialog_Alert;
 
-        int style = AlertDialog.THEME_HOLO_LIGHT;
+
+        //int style = AlertDialog.THEME_HOLO_LIGHT;
 
 
         datePickerDialog = new DatePickerDialog(this,style,dateSetListener,year,month,day);

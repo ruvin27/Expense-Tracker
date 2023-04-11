@@ -72,7 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
         else{
             mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(task -> {
                 if (task.isSuccessful()){
-                    Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "User registered successfully, Login again", Toast.LENGTH_SHORT).show();
 
                     userID = mAuth.getCurrentUser().getUid();
                     DatabaseReference myRef = database.getReference("users");
@@ -83,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
 //                    newExpenseRef.setValue(new Expense("gracehop", "Food", 100.0f));
 
 
-                    startActivity(new Intent(RegisterActivity.this, Overview.class));
+                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                 }else{
                     Toast.makeText(RegisterActivity.this, "Registration Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(RegisterActivity.this, LoginActivity.class));

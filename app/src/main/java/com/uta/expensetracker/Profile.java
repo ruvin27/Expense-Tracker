@@ -1,10 +1,12 @@
 package com.uta.expensetracker;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.view.ViewCompat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -49,7 +51,7 @@ public class Profile extends AppCompatActivity {
         emailid= findViewById(R.id.textView15);
         edit = findViewById(R.id.editbutton);
         logout = findViewById(R.id.logoutButton);
-       logout.setTooltipText("Click to Logout");
+        logout.setTooltipText("Click to Logout");
 
        setProfileDetails();
 
@@ -62,17 +64,39 @@ public class Profile extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth.signOut();
-                Toast.makeText(Profile.this, "Logout Successfull", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(Profile.this, LoginActivity.class));
+//                mAuth.signOut();
+//                Toast.makeText(Profile.this, "Logout Successfull", Toast.LENGTH_SHORT).show();
+//                startActivity(new Intent(Profile.this, LoginActivity.class));
+                userLogout();
             }
         });
 
     }
 
-//   // private void goToLogout() {
-//        startActivity(new Intent(Profile.this,MainActivity.class));
-//    }
+   public void userLogout(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to logout?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mAuth.signOut();
+                dialogInterface.dismiss();
+                Toast.makeText(Profile.this, "Logout Successfull", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(Profile.this, LoginActivity.class));
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            dialogInterface.dismiss();
+                Toast.makeText(Profile.this, "logout cancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+   }
+
 
     public void setProfileDetails(){
         userID = mAuth.getCurrentUser().getUid();
