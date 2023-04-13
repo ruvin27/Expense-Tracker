@@ -48,6 +48,7 @@ public class Overview extends AppCompatActivity {
         charts = findViewById(R.id.imageButton2);
         history = findViewById(R.id.imageButton3);
         profile = findViewById(R.id.imageButton4);
+        addExpense.setTooltipText("Click to Add Expense");
 
         mAuth = FirebaseAuth.getInstance();
         displayTotalAmount();
@@ -100,11 +101,11 @@ public class Overview extends AppCompatActivity {
                     }
 
                 }
-               totalAmount.setText(String.format("%.2f", totalExpenses));
-                foodAmt.setText(String.format("%.2f", totalFoodExpenses));
-                rentAmt.setText(String.format("%.2f", totalRentExpenses));
-                groceryAmt.setText(String.format("%.2f", totalGroceryExpenses));
-                miscAmt.setText(String.format("%.2f", totalMiscExpenses));
+               totalAmount.setText("$ "+String.format("%.2f", totalExpenses));
+                foodAmt.setText("$ "+ String.format("%.2f", totalFoodExpenses));
+                rentAmt.setText("$ "+ String.format("%.2f",totalRentExpenses));
+                groceryAmt.setText("$ "+ String.format("%.2f",totalGroceryExpenses));
+                miscAmt.setText("$ "+ String.format("%.2f",totalMiscExpenses));
             }
 
             @Override

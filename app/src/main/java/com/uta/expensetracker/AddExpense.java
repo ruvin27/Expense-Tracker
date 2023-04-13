@@ -40,6 +40,7 @@ public class AddExpense extends AppCompatActivity {
     private EditText amount;
     private EditText description;
     private Button add;
+    TextView back;
 
     FirebaseAuth mAuth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -60,6 +61,7 @@ public class AddExpense extends AppCompatActivity {
         amount = findViewById(R.id.amount_edittext);
         description = findViewById(R.id.editTextTextPersonName2);
         add = findViewById(R.id.addbtn);
+        back = findViewById(R.id.tvBack);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -99,7 +101,12 @@ public class AddExpense extends AppCompatActivity {
             }
         });
       add.setOnClickListener(view -> addExpense() );
+      back.setOnClickListener(view -> goToOverview());
 
+    }
+
+    private void goToOverview() {
+        startActivity(new Intent(AddExpense.this,Overview.class));
     }
 
     private void addExpense(){
@@ -153,7 +160,7 @@ public class AddExpense extends AppCompatActivity {
                 public void onSuccess(Void aVoid) {
                     System.out.println("Called Onsuccess");
                     Toast.makeText(AddExpense.this, "Expense added successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(AddExpense.this,History.class));
+                    startActivity(new Intent(AddExpense.this,Overview.class));
                 }
             });
         }
@@ -189,8 +196,10 @@ public class AddExpense extends AppCompatActivity {
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
+        int style = R.style.Theme_MaterialComponents_Light_Dialog_Alert;
 
-        int style = AlertDialog.THEME_HOLO_LIGHT;
+
+        //int style = AlertDialog.THEME_HOLO_LIGHT;
 
 
         datePickerDialog = new DatePickerDialog(this,style,dateSetListener,year,month,day);

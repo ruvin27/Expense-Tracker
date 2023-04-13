@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DeleteUpdateExpense">
-
     <LinearLayout
         android:layout_width="349dp"
         android:layout_height="51dp"
@@ -17,10 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.522">
-
-
     </LinearLayout>
-
     <EditText
         android:id="@+id/editTextTextPersonName"
         android:layout_width="401dp"
