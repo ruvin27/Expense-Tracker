@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -23,16 +24,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import android.view.Menu;
 
 public class Profile extends AppCompatActivity {
-    ImageButton dashboard;
-    ImageButton charts;
-    ImageButton history;
-    ImageButton profile;
+
     TextView name;
     TextView emailid;
     Button edit;
-    ImageButton logout;
+
     FirebaseAuth mAuth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference userReference;
@@ -41,36 +40,40 @@ public class Profile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        getSupportActionBar().setTitle("Profile");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
 
         mAuth = FirebaseAuth.getInstance();
-        dashboard = findViewById(R.id.imageButton1);
-        charts = findViewById(R.id.imageButton2);
-        history = findViewById(R.id.imageButton3);
-        profile = findViewById(R.id.imageButton4);
         name = findViewById(R.id.textView4);
         emailid= findViewById(R.id.textView15);
         edit = findViewById(R.id.editbutton);
-        logout = findViewById(R.id.logoutButton);
-        logout.setTooltipText("Click to Logout");
 
        setProfileDetails();
 
-        charts.setOnClickListener(view -> goToCharts());
-        history.setOnClickListener(view -> goToHistory());
-        profile.setOnClickListener(view -> goToProfile());
-        dashboard.setOnClickListener(view -> goToDashboard());
-
         edit.setOnClickListener(view -> goToEditProfile());
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                mAuth.signOut();
-//                Toast.makeText(Profile.this, "Logout Successfull", Toast.LENGTH_SHORT).show();
-//                startActivity(new Intent(Profile.this, LoginActivity.class));
-                userLogout();
-            }
-        });
 
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_logout, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId())
+        {
+        case R.id.logout:
+            //add the function to perform here
+            userLogout();
+            return(true);
+
+    }
+        return(super.onOptionsItemSelected(item));
     }
 
    public void userLogout(){
@@ -100,6 +103,7 @@ public class Profile extends AppCompatActivity {
 
     public void setProfileDetails(){
         userID = mAuth.getCurrentUser().getUid();
+
         userReference = database.getReference("users/"+userID);
         userReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -142,22 +146,4 @@ public class Profile extends AppCompatActivity {
         });
     }
 
-    public void goToDashboard(){
-        startActivity(new Intent(Profile.this,Overview.class));
-    }
-
-    public void goToAddExpense(){
-        startActivity(new Intent(Profile.this,AddExpense.class));
-    }
-
-    public void goToCharts(){
-        startActivity(new Intent(Profile.this,Charts.class));
-    }
-
-    public void goToHistory(){
-        startActivity(new Intent(Profile.this,History.class));
-    }
-    public void goToProfile(){
-        startActivity(new Intent(Profile.this,Profile.class));
-    }
 }

@@ -2,11 +2,13 @@ package com.uta.expensetracker;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -14,6 +16,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class Overview extends AppCompatActivity {
     TextView totalAmount;
@@ -26,6 +30,11 @@ public class Overview extends AppCompatActivity {
     ImageButton charts;
     ImageButton history;
     ImageButton profile;
+    CardView tot_exp;
+    CardView food;
+    CardView rent;
+    CardView grocery;
+    CardView misc;
 
     FirebaseAuth mAuth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -48,9 +57,16 @@ public class Overview extends AppCompatActivity {
         charts = findViewById(R.id.imageButton2);
         history = findViewById(R.id.imageButton3);
         profile = findViewById(R.id.imageButton4);
+        tot_exp = findViewById(R.id.cardView1);
+        food = findViewById(R.id.cardView2);
+        rent = findViewById(R.id.cardView3);
+        grocery =  findViewById(R.id.cardView4);
+        misc = findViewById(R.id.cardView5);
         addExpense.setTooltipText("Click to Add Expense");
 
         mAuth = FirebaseAuth.getInstance();
+        userID = mAuth.getCurrentUser().getUid();
+        expReference = database.getReference("users/"+userID+"/expenses");
         displayTotalAmount();
 
 
@@ -61,11 +77,19 @@ public class Overview extends AppCompatActivity {
         dashboard.setOnClickListener(view -> goToDashboard());
 
 
+        food.setOnClickListener(view -> displayExpense("Food"));
+        rent.setOnClickListener(view -> displayExpense("Rent"));
+        grocery.setOnClickListener(view -> displayExpense("Grocery"));
+        misc.setOnClickListener(view -> displayExpense("MISC"));
+        tot_exp.setOnClickListener(view -> displayExpense(" "));
+
+
+
     }
 
+
     public void displayTotalAmount(){
-        userID = mAuth.getCurrentUser().getUid();
-        expReference = database.getReference("users/"+userID+"/expenses");
+
         expReference.addValueEventListener(new ValueEventListener() {
             double totalExpenses = 0.0;
             double totalFoodExpenses = 0.0;
@@ -115,6 +139,40 @@ public class Overview extends AppCompatActivity {
         });
 
     }
+
+    private void displayExpense(String category) {
+        expReference.addValueEventListener(new ValueEventListener() {
+            ArrayList<Expense> listOfExpenses = new ArrayList<>();
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists() && snapshot.hasChildren()){
+                    for(DataSnapshot expSnapshot: snapshot.getChildren()){
+                        Expense expense = expSnapshot.getValue(Expense.class);
+                        if( expense.getCategory().equals(category)){
+                            listOfExpenses.add(expense);
+                        }
+                    }
+
+                    if (listOfExpenses == null || listOfExpenses.isEmpty()){
+                        startActivity(new Intent(Overview.this,History.class));
+                    } else{
+                        Intent intent = new Intent(Overview.this,History.class);
+                        intent.putExtra("expenses",listOfExpenses);
+                        startActivity(intent);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(Overview.this, "No relevant data found", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
     public void goToDashboard(){
         startActivity(new Intent(Overview.this,Overview.class));
     }

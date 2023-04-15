@@ -10,5 +10,7 @@ public class Charts extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charts);
+        getSupportActionBar().setTitle("Charts");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

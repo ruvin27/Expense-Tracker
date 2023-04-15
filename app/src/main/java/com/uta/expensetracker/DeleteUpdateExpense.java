@@ -13,6 +13,8 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -47,7 +49,7 @@ public class DeleteUpdateExpense extends AppCompatActivity {
     private EditText upd_amount;
     private EditText upd_description;
     private Button update;
-    private TextView delete;
+
     private Spinner spinner;
 
     FirebaseAuth mAuth;
@@ -60,6 +62,8 @@ public class DeleteUpdateExpense extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_update_expense);
+        getSupportActionBar().setTitle("Update/Delete");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Expense expense = (Expense) getIntent().getSerializableExtra("expense");
         initDatepicker();
@@ -72,12 +76,11 @@ public class DeleteUpdateExpense extends AppCompatActivity {
         dateButton.setText(getTodaysDate());
         spinner = findViewById(R.id.spinner);
         update = findViewById(R.id.button2);
-        delete = findViewById(R.id.tvDelete);
 
         List<String> categories = new ArrayList<>();
         categories.add(0, "choose");
         categories.add("Food");
-        categories.add("Groceries");
+        categories.add("Grocery");
         categories.add("Rent");
         categories.add("MISC");
 
@@ -169,9 +172,22 @@ public class DeleteUpdateExpense extends AppCompatActivity {
             }
         });
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_delete, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.delete:
+                //add the function to perform here
+                Expense expense = (Expense) getIntent().getSerializableExtra("expense");
                 AlertDialog.Builder builder = new AlertDialog.Builder(DeleteUpdateExpense.this);
                 builder.setMessage("Are you sure you want to delete?");
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -204,26 +220,10 @@ public class DeleteUpdateExpense extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
 
+                return(true);
 
-
-//
-//                userID = mAuth.getCurrentUser().getUid();
-//                expReference = database.getReference("users/"+userID+"/expenses/"+expense.getId());
-//
-//            expReference.removeValue(new DatabaseReference.CompletionListener() {
-//                @Override
-//                public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-//                    if( error == null){
-//                        Toast.makeText(DeleteUpdateExpense.this, "Deleted expense " +  expense.getName() + " successfully", Toast.LENGTH_SHORT).show();
-//                        startActivity(new Intent(DeleteUpdateExpense.this, History.class));
-//                    } else{
-//                        Toast.makeText(DeleteUpdateExpense.this, "Could not delete " +  expense.getName(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            });
-                }
-            });
-
+        }
+        return(super.onOptionsItemSelected(item));
     }
 
 

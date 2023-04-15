@@ -32,6 +32,8 @@ String userID;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+        getSupportActionBar().setTitle("Edit Profile");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ename = findViewById(R.id.editTextTextPersonName);
         eemail = findViewById(R.id.textView21);

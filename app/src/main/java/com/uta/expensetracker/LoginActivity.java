@@ -53,9 +53,9 @@ public class LoginActivity extends AppCompatActivity {
         builder.setTitle("Reset Password");
 
         final EditText emailField = new EditText(this);
-        emailField.setHint("Enter your registered email address to send the link");
+        emailField.setHint("Enter your registered email address");
         emailField.setWidth(400);
-        emailField.setTextSize(14);
+        emailField.setTextSize(19);
         emailField.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         builder.setView(emailField);
 
