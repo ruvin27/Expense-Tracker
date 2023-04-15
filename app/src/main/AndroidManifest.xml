@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uta.expensetracker">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,13 +16,16 @@
             android:exported="false" />
         <activity
             android:name=".EditProfile"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".Profile"/>
         <activity
             android:name=".Profile"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".Overview"/>
         <activity
             android:name=".Charts"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".Overview"/>
         <activity
             android:name=".Overview"
             android:exported="false" />
@@ -29,19 +34,17 @@
             android:exported="false" />
         <activity
             android:name=".History"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.example.expensetracker.History" />
+            android:exported="false"
+            android:parentActivityName=".Overview"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".DeleteUpdateExpense"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".History"/>
         <activity
             android:name=".AddExpense"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".Overview"/>
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
