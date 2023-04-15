@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uta.expensetracker">
+
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -12,20 +13,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ExpenseTracker">
         <activity
+            android:name=".BarChartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PieChartActivity"
+            android:exported="false" />
+        <activity
             android:name=".ForgotPassword"
             android:exported="false" />
         <activity
             android:name=".EditProfile"
             android:exported="false"
-            android:parentActivityName=".Profile"/>
+            android:parentActivityName=".Profile" />
         <activity
             android:name=".Profile"
             android:exported="false"
-            android:parentActivityName=".Overview"/>
+            android:parentActivityName=".Overview" />
         <activity
             android:name=".Charts"
             android:exported="false"
-            android:parentActivityName=".Overview"/>
+            android:parentActivityName=".Overview" />
         <activity
             android:name=".Overview"
             android:exported="false" />
@@ -35,16 +42,15 @@
         <activity
             android:name=".History"
             android:exported="false"
-            android:parentActivityName=".Overview"/>
-
+            android:parentActivityName=".Overview" />
         <activity
             android:name=".DeleteUpdateExpense"
             android:exported="false"
-            android:parentActivityName=".History"/>
+            android:parentActivityName=".History" />
         <activity
             android:name=".AddExpense"
             android:exported="false"
-            android:parentActivityName=".Overview"/>
+            android:parentActivityName=".Overview" />
         <activity
             android:name=".LoginActivity"
             android:exported="false" />

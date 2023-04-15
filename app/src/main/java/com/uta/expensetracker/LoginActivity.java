@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                            Toast.makeText(LoginActivity.this, "Link has to sent to the email address", Toast.LENGTH_SHORT).show();
                            startActivity(new Intent(LoginActivity.this,LoginActivity.class));
                        } else{
-                           Toast.makeText(LoginActivity.this, "Could not sedn the link to the email address", Toast.LENGTH_SHORT).show();
+                           Toast.makeText(LoginActivity.this, "Could not send the link to the email address", Toast.LENGTH_SHORT).show();
                            startActivity(new Intent(LoginActivity.this,LoginActivity.class));
                        }
                    }
