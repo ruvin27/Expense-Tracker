@@ -17,7 +17,8 @@
             android:exported="false" />
         <activity
             android:name=".PieChartActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".Charts"/>
         <activity
             android:name=".ForgotPassword"
             android:exported="false" />
