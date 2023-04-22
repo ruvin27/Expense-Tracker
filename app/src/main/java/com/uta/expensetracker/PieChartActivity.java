@@ -117,15 +117,15 @@ public class PieChartActivity extends AppCompatActivity {
                             }
                         }
 
-                        if ((expenseYear == calendar1.get(Calendar.YEAR)) && (expenseMonth == ( calendar1.get(Calendar.MONTH)) +1)) {
-                            if (Category.containsKey(expense.category)) {
-                                Float amt = Category.get(expense.category);
-                                Category.put(expense.category, new Float(expense.amount + amt));
-                            } else {
-                                Category.put(expense.category, new Float(expense.amount));
-                            }
-                            System.out.println(Category);
-                        }
+//                        if ((expenseYear == calendar1.get(Calendar.YEAR)) && (expenseMonth == ( calendar1.get(Calendar.MONTH)) +1)) {
+//                            if (Category.containsKey(expense.category)) {
+//                                Float amt = Category.get(expense.category);
+//                                Category.put(expense.category, new Float(expense.amount + amt));
+//                            } else {
+//                                Category.put(expense.category, new Float(expense.amount));
+//                            }
+//                            System.out.println(Category);
+//                        }
                     }
                     if (!Category.containsKey("Food")) {
                         Category.put("Food", 0f);
