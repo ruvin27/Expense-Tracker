@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class DeleteUpdateExpense extends AppCompatActivity {
 
@@ -127,11 +129,23 @@ public class DeleteUpdateExpense extends AppCompatActivity {
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = upd_name.getText().toString();
-                Double amount = Double.valueOf(upd_amount.getText().toString());
+                String name = Objects.requireNonNull(upd_name.getText().toString()) ;
+               // Double amount = Objects.requireNonNull(Double.valueOf(upd_amount.getText().toString())) ;
+                String uamount = Objects.requireNonNull(upd_amount.getText().toString());
+                double amount =000.00;
+                if (TextUtils.isEmpty(uamount)) {
+                    upd_amount.setError("Amount cannot be empty");
+                    upd_amount.requestFocus();
+                } else {
+                    amount = Double.valueOf(uamount);
+                }
+
                 String description = upd_description.getText().toString();
-                String category = spinner.getSelectedItem().toString();
-                String dateStr = dateButton.getText().toString();
+                if (TextUtils.isEmpty(description)){
+                    description = "No description";
+                }
+                String category = Objects.requireNonNull(spinner.getSelectedItem().toString()) ;
+                String dateStr = Objects.requireNonNull(dateButton.getText().toString());
                 System.out.println("datestr" + dateStr);
 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd yyyy", Locale.US);
@@ -146,29 +160,43 @@ public class DeleteUpdateExpense extends AppCompatActivity {
                 String newdate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(date);
                 System.out.println("newdate" + newdate);
 
-                userID = mAuth.getCurrentUser().getUid();
-                expReference = database.getReference("users/"+userID+"/expenses/"+expense.getId());
+                if (TextUtils.isEmpty(name)){
+                    System.out.println("No name");
+                    upd_name.setError("Name cannot be empty");
+                    upd_name.requestFocus();
+
+                } else if (TextUtils.isEmpty(dateStr)){
+                    dateButton.setError("date cannot be empty");
+                    dateButton.requestFocus();
+                }else if (category.equals("choose")){
+                    TextView errorText = (TextView) spinner.getSelectedView();
+                    errorText.setError("Please select a category");
+                    spinner.requestFocus();
+                } else {
+
+                    userID = mAuth.getCurrentUser().getUid();
+                    expReference = database.getReference("users/" + userID + "/expenses/" + expense.getId());
 
 
-                HashMap<String, Object> updatedExpense = new HashMap<>();
-                updatedExpense.put("name", name);
-                updatedExpense.put("amount", amount);
-                updatedExpense.put("description", description);
-                updatedExpense.put("date", newdate);
-                updatedExpense.put("category", category);
+                    HashMap<String, Object> updatedExpense = new HashMap<>();
+                    updatedExpense.put("name", name);
+                    updatedExpense.put("amount", amount);
+                    updatedExpense.put("description", description);
+                    updatedExpense.put("date", newdate);
+                    updatedExpense.put("category", category);
 
-                expReference.updateChildren(updatedExpense, new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                    if(error == null){
-                        Toast.makeText(DeleteUpdateExpense.this, "Your expense" + expense.getName() +" got updated", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(DeleteUpdateExpense.this,History.class));
-                    } else{
-                        Toast.makeText(DeleteUpdateExpense.this, "Could not update the expense "+ expense.getName(), Toast.LENGTH_SHORT).show();
-                    }
+                    expReference.updateChildren(updatedExpense, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                            if (error == null) {
+                                Toast.makeText(DeleteUpdateExpense.this, "Your expense" + expense.getName() + " got updated", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(DeleteUpdateExpense.this, History.class));
+                            } else {
+                                Toast.makeText(DeleteUpdateExpense.this, "Could not update the expense " + expense.getName(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 }
-                });
-
             }
         });
 
@@ -255,9 +283,9 @@ public class DeleteUpdateExpense extends AppCompatActivity {
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
 
-        int style = AlertDialog.THEME_HOLO_LIGHT;
 
-        datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
+
+        datePickerDialog = new DatePickerDialog(this, dateSetListener, year, month, day);
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
 
     }

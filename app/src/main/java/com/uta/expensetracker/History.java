@@ -2,6 +2,7 @@ package com.uta.expensetracker;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,9 +21,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,15 +46,21 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
+
 public class History extends AppCompatActivity {
     private ListView listview;
     private HistoryLayout historyLayout;
-
+private RadioGroup radioGroup;
+private RadioButton currmonth;
+private RadioButton lastmonth;
+private RadioButton custom;
 
 
     FirebaseAuth mAuth;
@@ -67,6 +82,60 @@ public class History extends AppCompatActivity {
         getSupportActionBar().setTitle("History");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        radioGroup = findViewById(R.id.radio_group);
+        currmonth = findViewById(R.id.radio_button1);
+        lastmonth =  findViewById(R.id.radio_button2);
+        custom = findViewById(R.id.radio_button3);
+
+        MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+        builder.setTitleText("Select a date range");
+
+        CalendarConstraints.Builder constraint = new CalendarConstraints.Builder();
+        constraint.setValidator(DateValidatorPointBackward.now());
+        builder.setCalendarConstraints(constraint.build());
+        final MaterialDatePicker materialDatePicker = builder.build();
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                Calendar calender = Calendar.getInstance();
+                int currYear = calender.get(Calendar.YEAR);
+                int currMonth = calender.get(Calendar.MONTH) + 1;
+
+                switch(id){
+                    case R.id.radio_button1:
+                        printExpensesOnDate(currMonth,currYear);
+                        break;
+                    case R.id.radio_button2:
+                        currMonth = currMonth -1;
+                        System.out.println("currMonth" +currMonth);
+                        printExpensesOnDate(currMonth,currYear);
+                        break;
+                    case R.id.radio_button3:
+                        materialDatePicker.show(getSupportFragmentManager(),"Date_range_picker");
+
+                        materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+                            @Override
+                            public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                             Long startDate = selection.first;
+                             Long endDate = selection.second;
+                             Calendar startCal = Calendar.getInstance();
+                             startCal.setTimeInMillis(startDate);
+
+                             Calendar endCal = Calendar.getInstance();
+                             endCal.setTimeInMillis(endDate);
+                             printCustomDateExpense(startCal,endCal);
+                            }
+                        });
+
+
+                        break;
+
+                }
+            }
+        });
+
+
 
 
         listview = findViewById(R.id.listExpense);
@@ -74,10 +143,11 @@ public class History extends AppCompatActivity {
         userID = mAuth.getCurrentUser().getUid();
         expenseRef = database.getReference("users/" + userID + "/expenses");
 
-        //to display the history based on the filter applied from nthe overview page
+        //to display the history based on the filter applied from the overview page
         ArrayList<Expense> filterList = (ArrayList<Expense>) getIntent().getSerializableExtra("expenses");
+        boolean flag = getIntent().getBooleanExtra("flag",false);
 
-        if (filterList == null || filterList.isEmpty()) {
+        if ((filterList == null || filterList.isEmpty()) && flag == false) {
             // If the expense list is null or empty, retrieve all expenses from the database
             expenseRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -91,6 +161,7 @@ public class History extends AppCompatActivity {
                             listOfExpenses.add(expense);
                         }
                     }
+                    Collections.sort(listOfExpenses);
                     // Create and set the adapter for the RecyclerView
                     historyLayout = new HistoryLayout(History.this, R.layout.activity_history_layout, listOfExpenses);
                     listview.setAdapter(historyLayout);
@@ -102,7 +173,14 @@ public class History extends AppCompatActivity {
                     // Handle database error
                 }
             });
-        } else {
+        }else if ((filterList == null || filterList.isEmpty()) && flag == true) {
+            ArrayList<Expense> emptyList = new ArrayList<>();
+            historyLayout = new HistoryLayout(History.this, R.layout.activity_history_layout, emptyList);
+            listview.setAdapter(historyLayout);
+            historyLayout.notifyDataSetChanged();
+
+        }
+        else {
             // If the expense list is not null or empty, use it to populate the RecyclerView
             historyLayout = new HistoryLayout(History.this, R.layout.activity_history_layout, filterList);
             listview.setAdapter(historyLayout);
@@ -123,10 +201,106 @@ public class History extends AppCompatActivity {
 
     }
 
+
+    private void printCustomDateExpense(Calendar startCal, Calendar endCal) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        expenseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<Expense> listOfExpenses = new ArrayList<>();
+
+                // Iterate through the DataSnapshot objects to extract the expenses
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    for (DataSnapshot expenseSnapshot : snapshot.getChildren()) {
+                        Expense expense = expenseSnapshot.getValue(Expense.class);
+                        Date expDate = null;
+                        try {
+                            expDate = dateFormat.parse(expense.getDate());
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        Calendar expenseCal = Calendar.getInstance();
+                        expenseCal.setTime(expDate);
+                        if ((expenseCal.compareTo(startCal) >= 0 ) && (expenseCal.compareTo(endCal) <=0)){
+                            listOfExpenses.add(expense);
+                            }
+                        }
+
+                    }
+                Collections.sort(listOfExpenses);
+                    if (listOfExpenses.isEmpty() || listOfExpenses == null){
+                        Toast.makeText(History.this, "No expense in this month or date", Toast.LENGTH_SHORT).show();
+                    } else {
+                        historyLayout = new HistoryLayout(History.this, R.layout.activity_history_layout, listOfExpenses);
+                        listview.setAdapter(historyLayout);
+                        historyLayout.notifyDataSetChanged();
+                    }
+
+                }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(History.this, "Error in retrieving data from databse", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void printExpensesOnDate(int currMonth, int currYear) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+        expenseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<Expense> listOfExpenses = new ArrayList<>();
+
+                // Iterate through the DataSnapshot objects to extract the expenses
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    for (DataSnapshot expenseSnapshot : snapshot.getChildren()) {
+                        Expense expense = expenseSnapshot.getValue(Expense.class);
+                        Date expDate = null;
+                        try {
+                             expDate = dateFormat.parse(expense.getDate());
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        Calendar expenseCal = Calendar.getInstance();
+                        expenseCal.setTime(expDate);
+                        int expenseYear = expenseCal.get(Calendar.YEAR);
+                        int expenseMonth = expenseCal.get(Calendar.MONTH) + 1;
+
+                        if((expenseYear == currYear) && (expenseMonth == currMonth)){
+                            System.out.println("crrExpense: " + expense);
+                            listOfExpenses.add(expense);
+                            System.out.println("size:" + listOfExpenses.size());
+                        }
+                    }
+                    Collections.sort(listOfExpenses);
+                    if (listOfExpenses.isEmpty() || listOfExpenses == null){
+                        Toast.makeText(History.this, "No expense in this month or date", Toast.LENGTH_SHORT).show();
+                    } else {
+                        historyLayout = new HistoryLayout(History.this, R.layout.activity_history_layout, listOfExpenses);
+                        listview.setAdapter(historyLayout);
+                        historyLayout.notifyDataSetChanged();
+                    }
+
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(History.this, "Error in retrieving data from databse", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
+        getMenuInflater().inflate(R.menu.menu_filter,menu);
         getMenuInflater().inflate(R.menu.menu_pdf,menu);
 
         MenuItem search = menu.findItem(R.id.search);
@@ -152,6 +326,14 @@ public class History extends AppCompatActivity {
                 }
             });
          }
+        search_view.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                searchText("");
+                return false;
+            }
+        });
+
       return true;
     }
 
@@ -166,11 +348,73 @@ public class History extends AppCompatActivity {
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                return(true);
-
+                break;
+            case R.id.filter:
+                View anchor = findViewById(R.id.filter); // the view that will anchor the popup menu
+                PopupMenu popupMenu = new PopupMenu(this, anchor);
+                popupMenu.getMenuInflater().inflate(R.menu.menu_filter_items, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.menu_food:
+                                Toast.makeText(History.this, "Food clicked", Toast.LENGTH_SHORT).show();
+                                filterExpense("Food");
+                                return true;
+                            case R.id.menu_rent:
+                                filterExpense("Rent");
+                                return true;
+                            case R.id.menu_grocery:
+                                filterExpense("Grocery");
+                                return true;
+                            case R.id.menu_MISC:
+                                filterExpense("MISC");
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                popupMenu.show();
+                break;
+            default:
+                return(super.onOptionsItemSelected(item));
         }
-        return(super.onOptionsItemSelected(item));
+        return true;
     }
+
+    private void filterExpense(String category) {
+        String item = category;
+        expenseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<Expense> listOfExpenses = new ArrayList<>();
+
+                // Iterate through the DataSnapshot objects to extract the expenses
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    for (DataSnapshot expenseSnapshot : snapshot.getChildren()) {
+                        Expense expense = expenseSnapshot.getValue(Expense.class);
+                        if (expense.getCategory().equals(item)){
+                            System.out.println(expense);
+                            listOfExpenses.add(expense);
+                        }
+
+                    }
+                }
+                Collections.sort(listOfExpenses);
+                // Create and set the adapter for the RecyclerView
+                historyLayout = new HistoryLayout(History.this, R.layout.activity_history_layout, listOfExpenses);
+                listview.setAdapter(historyLayout);
+                historyLayout.notifyDataSetChanged();
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle database error
+            }
+        });
+    }
+
 
     private void createPdf() throws FileNotFoundException {
         PdfDocument mydoc = new PdfDocument();
@@ -295,7 +539,7 @@ public class History extends AppCompatActivity {
                         Expense expense = expenseSnapshot.getValue(Expense.class);
                         if (((expense.getName().toLowerCase()).equals(search_text.toLowerCase())) ||
                                 (expense.getName().split(" ")[0].toLowerCase()).equals(search_text.toLowerCase())
-                                ||((expense.getName().split(" ")[1].toLowerCase()).equals(search_text.toLowerCase()))) {
+                                ||(expense.getName().split(" ").length > 1 && (expense.getName().split(" ")[1].toLowerCase()).equals(search_text.toLowerCase()))) {
                                     listOfExpenses.add(expense);
                             }
                         }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Expense implements Serializable {
+public class Expense implements Serializable, Comparable<Expense> {
     public String name;
     public String category;
     public Double amount;
@@ -79,5 +79,12 @@ public class Expense implements Serializable {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    @Override
+    public int compareTo(Expense expense) {
+        //return this.date.compareTo(expense.getDate());
+        return expense.getDate().compareTo(this.date);
+
     }
 }
