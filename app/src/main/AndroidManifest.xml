@@ -14,7 +14,8 @@
         android:theme="@style/Theme.ExpenseTracker">
         <activity
             android:name=".BarChartActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".Charts"/>
         <activity
             android:name=".PieChartActivity"
             android:exported="false"
